@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="four_cameras" default="true"/>
+	<param name="robot_description" command="$(find xacro)/xacro '$(find nexus_4wd_mecanum_description)/urdf/zed_exp.xacro' four_cameras:=$(arg four_cameras)" />
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+        
+</launch>

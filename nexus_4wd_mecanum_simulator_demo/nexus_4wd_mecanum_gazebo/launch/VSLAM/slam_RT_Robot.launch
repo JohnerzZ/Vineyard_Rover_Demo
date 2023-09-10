@@ -1,0 +1,41 @@
+<launch>
+    <arg name="robot_name"          default=""/>
+    <arg name="rviz"                default="true"/>
+    <arg name="ground_truth"        default="false"/>
+
+    <arg if="$(eval arg('ground_truth'))"  name="transform_period" value="0.0" />
+    <arg unless="$(eval arg('ground_truth'))"  name="transform_period" value="0.5" />
+
+    <arg if="$(eval arg('ground_truth'))"  name="odom_frame" value="odom" />
+    <arg unless="$(eval arg('ground_truth'))"  name="odom_frame" value="odom" />
+    
+    <arg if="$(eval arg('robot_name') == '/')"  name="frame_prefix" value="" />
+    <arg unless="$(eval arg('robot_name') == '/')" name="frame_prefix" value="$(arg robot_name)/" />
+
+
+        <include file="$(find nexus_4wd_mecanum_gazebo)/launch/VSLAM/gmapping.launch">
+            <arg name="frame_prefix"     value="$(arg frame_prefix)"/>
+            <arg name="transform_period" value="$(arg transform_period)"/>
+            <arg name="odom_frame"       value="$(arg odom_frame)"/>
+        </include>
+
+        <include file="$(find nexus_4wd_mecanum_gazebo)/launch/VSLAM/move_base.launch">
+            <arg name="frame_prefix"     value="$(arg frame_prefix)"/>
+            <arg name="robot_name"       value="$(arg robot_name)"/>
+            <arg name="odom_frame"       value="$(arg odom_frame)"/>
+        </include> 
+
+        <!-- Calls navigation stack packages -->
+
+        <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz"
+            args="-d $(find nexus_4wd_mecanum_gazebo)/rviz/navigate_disp.rviz -f $(arg frame_prefix)map"
+            output="screen"/>
+
+        <include file="$(find nexus_4wd_mecanum_gazebo)/launch/VSLAM/point_to_laser_node.launch" >
+                <arg name="app_name"             value="DC_VSLAM"/>
+                <arg name="target_frame"            value="camera_center_1"/>
+                <arg name="min_height"              value="-1"/>
+                <arg name="max_height"              value="1"/>
+        </include>
+
+</launch>

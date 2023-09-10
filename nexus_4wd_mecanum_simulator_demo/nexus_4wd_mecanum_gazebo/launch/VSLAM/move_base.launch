@@ -1,0 +1,40 @@
+<launch>
+    <arg name="frame_prefix" default=""/>
+    <arg name="robot_name" default=""/>
+    <arg name="odom_frame" default="odom"/>
+    
+
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/move_base/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/move_base/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/move_base/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/move_base/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/move_base/base_local_planner_holonomic_params.yaml" command="load" />
+        <rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/move_base/move_base_params.yaml" command="load" />
+
+        <!-- <param name="base_local_planner"                            value="nav_core_adapter::LocalPlannerAdapter"/> -->
+        <param name="global_costmap/global_frame"                   value="map"/>
+        <param name="global_costmap/robot_base_frame"               value="base_link"/>
+        <param name="global_costmap/2d_obstacles_layer/scan/topic"  value="scan"/>
+        <param name="global_costmap/3d_obstacles_layer/depth/topic" value="DC_VSLAM/points2"/>
+        <param name="local_costmap/global_frame"                    value="$(arg odom_frame)"/>
+        <param name="local_costmap/robot_base_frame"                value="base_link"/>
+        <param name="local_costmap/2d_obstacles_layer/scan/topic"   value="scan"/>
+        <param name="local_costmap/3d_obstacles_layer/depth/topic"  value="DC_VSLAM/points2"/>
+    </node>
+    <!-- <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+  	  	<rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/omnidir/costmap_common_params.yaml" command="load" ns="global_costmap" />
+  	 	<rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/omnidir/costmap_common_params.yaml" command="load" ns="local_costmap" />
+  		<rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/omnidir/local_costmap_params.yaml" command="load" />
+  		<rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/omnidir/global_costmap_params.yaml" command="load" />
+  		<rosparam file="$(find nexus_4wd_mecanum_gazebo)/config/omnidir/teb_local_planner_params.yaml" command="load" />
+
+		<param name="base_global_planner" value="global_planner/GlobalPlanner" />
+		<param name="planner_frequency" value="1.0" />
+		<param name="planner_patience" value="5.0" />
+
+		<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+		<param name="controller_frequency" value="5.0" />
+		<param name="controller_patience" value="15.0" />
+	</node> -->
+</launch>

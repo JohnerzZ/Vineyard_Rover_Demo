@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+        <arg name="use_sim_time" default="true" />
+        <arg name="gui" default="true" />
+        <arg name="headless" default="false" />
+        <arg name="four_cameras" default="true"/>
+        <arg name="world_frame"            default="odom"/>
+        <arg name="namespace"              default=""/>
+        <arg name="child_frame_id"         default="base_link"/>
+
+  <arg name="gazebo_world"                                default="$(find nexus_4wd_mecanum_gazebo)/worlds/csl_lab_simulation_accurate_10.world" /> 
+  
+  
+  <env name="GAZEBO_MODEL_PATH"     value="$(find nexus_4wd_mecanum_description)"/>
+
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+          <arg name="world_name" value="$(arg gazebo_world)"/>
+          <arg name="gui" value="true" />
+          <arg name="paused" value="false"/>
+          <arg name="use_sim_time" value="true"/>
+          <arg name="headless" value="false"/>
+          <arg name="extra_gazebo_args" value="odom:=/gazebo/odom" />
+  </include>
+
+<!-- Load robot description -->
+<include file="$(find nexus_4wd_mecanum_description)/launch/nexus_4wd_mecanum_description_4_cam.launch" />
+
+  <!-- Spawn the robot -->
+<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -model nexus_4wd_mecanum -param robot_description -x 1.5 -y 1.5 -z 0.05 -R 0 -P 0 -Y 0" />
+
+  <!-- Publish map to odom transform -->   
+<node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 /map /odom 100"/>
+<node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map 100"/>
+
+
+</launch>

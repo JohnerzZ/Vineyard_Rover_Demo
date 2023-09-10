@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<robot name="zed_exp" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:property name="PI" value="3.1415926535897931" />
+
+  <link name="base_footprint"></link>
+
+  <joint name="base_link_joint" type="fixed">
+    <origin xyz="0 0 0.0" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+  </joint>
+
+  <link name="base_link"/>
+
+  <xacro:include filename="$(find nexus_4wd_mecanum_description)/urdf/zed_camera.urdf.xacro"/>
+
+  <xacro:zed_camera base_name="base_link" pos_x="0.15" pos_y="0.0" pos_z="0.2" rotate_camera="0.0" camera_numb="1"/>
+  <xacro:if value="$(arg four_cameras)">
+    <xacro:zed_camera base_name="base_link" pos_x="0.0" pos_y="-0.15" pos_z="0.2" rotate_camera="-0.5" camera_numb="2"/>
+    <xacro:zed_camera base_name="base_link" pos_x="0.0" pos_y="0.15" pos_z="0.2" rotate_camera="0.5" camera_numb="3"/>
+    <xacro:zed_camera base_name="base_link" pos_x="-0.15" pos_y="0.0" pos_z="0.2" rotate_camera="1.0" camera_numb="4"/>
+  </xacro:if>
+
+  <gazebo>
+      <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+            <alwaysOn>true</alwaysOn>
+            <updateRate>100.0</updateRate>
+            <bodyName>base_footprint</bodyName>
+            <topicName>ground_truth/pose</topicName>
+            <gaussianNoise>0.0</gaussianNoise>
+            <frameName>world</frameName>
+            <xyzOffsets>0 0 0</xyzOffsets>
+            <rpyOffsets>0 0 0</rpyOffsets>
+      </plugin> 
+  </gazebo>
+
+</robot>

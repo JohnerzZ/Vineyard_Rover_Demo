@@ -1,0 +1,61 @@
+<launch>
+    <arg name="robot_name"          default=""/>
+    <arg name="rviz"                default="true"/>
+    <arg name="ground_truth"        default="false"/>
+    <arg name="four_cameras"        default="false"/>
+    <arg name="world_frame"            default="odom"/>
+    <arg name="namespace"              default=""/>
+    <arg name="child_frame_id"         default="base_link"/>
+
+    <arg if="$(eval arg('ground_truth'))"  name="transform_period" value="0.0" />
+    <arg unless="$(eval arg('ground_truth'))"  name="transform_period" value="0.5" />
+
+    <arg if="$(eval arg('ground_truth'))"  name="odom_frame" value="odom" />
+    <arg unless="$(eval arg('ground_truth'))"  name="odom_frame" value="odom" />
+    
+    <arg if="$(eval arg('robot_name') == '/')"  name="frame_prefix" value="" />
+    <arg unless="$(eval arg('robot_name') == '/')" name="frame_prefix" value="$(arg robot_name)/" />
+
+
+        <include file="$(find nexus_4wd_mecanum_gazebo)/launch/VSLAM/gmapping.launch">
+            <arg name="frame_prefix"     value="$(arg frame_prefix)"/>
+            <arg name="transform_period" value="$(arg transform_period)"/>
+            <arg name="odom_frame"       value="$(arg odom_frame)"/>
+        </include>
+
+        <include file="$(find nexus_4wd_mecanum_description)/launch/zed_exp_description.launch"> 
+            <arg name="four_cameras"     value="$(arg four_cameras)"/>
+
+        </include>
+
+  <!-- Spawn the robot -->
+        <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -model zed_exp -param robot_description -x 0 -y 0 -z 0.05 -R 0 -P 0 -Y 1.57" />
+
+        <!-- <node name="odom_to_tf" pkg="message_to_tf" type="message_to_tf" args="odom">
+            <param name="~frame_id"                 value="$(arg world_frame)" />
+            <param name="~stabilized_frame_id"      value="/$(arg namespace)/base_stabilized" />
+            <param name="~footprint_frame_id"       value="/$(arg namespace)/base_footprint" />
+            <param name="~child_frame_id"           value="$(arg child_frame_id)" />
+        </node> -->
+
+        <include file="$(find nexus_4wd_mecanum_gazebo)/launch/VSLAM/move_base.launch">
+            <arg name="frame_prefix"     value="$(arg frame_prefix)"/>
+            <arg name="robot_name"       value="$(arg robot_name)"/>
+            <arg name="odom_frame"       value="$(arg odom_frame)"/>
+        </include> 
+
+        <!-- Calls navigation stack packages -->
+
+        <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz"
+            args="-d $(find nexus_4wd_mecanum_gazebo)/rviz/navigate_disp.rviz -f $(arg frame_prefix)map"
+            output="screen"/>
+
+        <include file="$(find nexus_4wd_mecanum_gazebo)/launch/VSLAM/point_to_laser_node.launch" >
+                <arg name="app_name"             value="DC_VSLAM"/>
+                <arg name="target_frame"            value="camera_center_1"/>
+                <arg name="min_height"              value="-1"/>
+                <arg name="max_height"              value="1"/>
+        </include>
+
+</launch>
