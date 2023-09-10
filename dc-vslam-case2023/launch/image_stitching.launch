@@ -1,0 +1,28 @@
+<launch>
+	<arg name="map_file" default="$(find map_server)/test/vineyard.yaml"/>
+
+  	<!-- Run the map server -->
+        <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+	<!-- Launch two zed cameras -->
+  	<include file="$(find dc_vslam)/launch/zed_multi_cam.launch" />
+
+	<!-- Launch kokas' dual cam real time odometry with short delay -->
+  	<include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+    		<arg name="time" value="9" />
+    		<arg name="pkg" value="dc_vslam" />
+    		<arg name="file" value="DualCamRTAT-lab.launch" />
+   		<arg name="node_name" value="dc_vslam" /> <!-- This is optional argument -->
+  	</include>
+  	<!-- https://answers.ros.org/question/368678/how-do-i-compose-a-launch-file-that-launches-my-nodes-after-dependency-nodes/ -->
+  	
+  	 <!-- Run the goal publisher -->
+        <node name="nav_goal_waypoint_publisher" pkg="dc_vslam" type="nav_goal_waypoint_publisher"/>
+        
+        <!-- Run the udp client -->
+  	<node name="udp_client" pkg="dc_vslam" type="udp_client.py" launch-prefix="bash -c 'sleep 10.0; $0 $@' " />
+  	
+  	<!-- Run the basic controller -->
+        <node name="go_to_goal_x_y_yaw" pkg="dc_vslam" type="go_to_goal_x_y_yaw" launch-prefix="bash -c 'sleep 12.0; $0 $@' " />
+
+</launch>
