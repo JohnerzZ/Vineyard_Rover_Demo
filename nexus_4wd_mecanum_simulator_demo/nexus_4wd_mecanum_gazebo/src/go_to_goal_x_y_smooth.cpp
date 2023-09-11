@@ -14,7 +14,7 @@ using namespace std;
  
 // Key variable declarations 
 geometry_msgs::Twist velCommand; // Linear and angular velocity in m/s 
-geometry_msgs::Pose2D current; // Current x, y, and theta 
+geometry_msgs::Pose2D current; // Current x, y, and theta
 geometry_msgs::Pose2D waypointGoal; // Waypoint x, y, and theta (the waypoint)
 std_msgs::Float64 yaw;
 std_msgs::Float64 speed_abs;
@@ -169,7 +169,7 @@ void updatePose(const nav_msgs::Odometry::ConstPtr &currentPose) {
     currentPose->pose.pose.orientation.w);
     tf::Matrix3x3 m(q);
     double roll, pitch, yaw;
-    m.getRPY(roll, pitch, yaw);			//convert quaternions to roll, pitch, yaw.
+    m.getRPY(roll, pitch, yaw);     //convert quaternions to roll, pitch, yaw.
     current.theta = yaw;
 }
  

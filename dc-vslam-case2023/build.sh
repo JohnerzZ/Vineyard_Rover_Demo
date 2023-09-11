@@ -46,7 +46,7 @@ cd Pangolin
 cmake -B build
 cmake --build build
 
-cd ../../../../
+cd ../../../../../
 
 rosdep install --from-paths src --ignore-src -r -y
 

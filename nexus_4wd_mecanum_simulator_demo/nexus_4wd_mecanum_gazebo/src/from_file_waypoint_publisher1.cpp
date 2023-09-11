@@ -1,5 +1,5 @@
 #include <iostream> // Enables command line input and output
- #include <fstream>  //To start an ifstream
+#include <fstream>  //To start an ifstream
 #include "ros/ros.h" // Necessary header files for ROS
 #include "geometry_msgs/Pose2D.h" // x, y position and theta orientation
 #include "std_msgs/Bool.h"
@@ -9,7 +9,7 @@ using namespace std;
  
 // Key variable declarations 
 geometry_msgs::Pose2D waypoint; // Goal location ... x, y, and theta 
-std::ifstream infile("/home/johnerzz/Documents/school/thesis/poulakakis/LIP_MPC/vineyard/map/waypoints_for_ros.txt");
+std::ifstream infile("src/rover_demo/nexus_4wd_mecanum_simulator_demo/nexus_4wd_mecanum_gazebo/src/waypoints_for_ros.txt");
 bool waypointReached = true;
 
 // Get the desired waypoint from file. Line by Line. Where do you want the robot to move to?
